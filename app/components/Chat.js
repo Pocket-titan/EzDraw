@@ -6,7 +6,7 @@ let Message = (message, index) => {
   return (
     <View>
       <Text>
-        <b> { message.from }: </b>
+        <b> { message.user }: </b>
         { message.body }
       </Text>
     </View>

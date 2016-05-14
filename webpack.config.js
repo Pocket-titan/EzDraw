@@ -1,11 +1,18 @@
 var path = require('path')
 
 module.exports = {
-  entry: path.resolve(__dirname, 'app/main.js'),
+  entry: './app/main.js',
   output: {
-    filename: path.resolve(__dirname, 'production/bundle.js'),
+    filename: './production/bundle.js',
   },
-  devtool: 'source-map',
+  devServer: {
+    inline: true,
+    port: 3333,
+  },
+  scripts: {
+    'start': 'webpack-dev-server',
+  },
+  devtool: 'source-maps',
   module: {
     loaders: [
       {

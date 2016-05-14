@@ -4,7 +4,7 @@ import { View, Text } from '../components.js'
 let User = (user) => {
   return (
     <View>
-      { user.name }
+      { user }
     </View>
   )
 }
