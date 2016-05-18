@@ -20,6 +20,7 @@ export default class App extends React.Component {
         this.setState({ username: chosenName })
       }
     }
+    //If we don't have a username yet, make us choose one, then we can continue to the game
     if (username === null) {
       return (
         <ChooseName onSubmit={onSubmit}/>
