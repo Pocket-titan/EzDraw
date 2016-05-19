@@ -3,12 +3,11 @@ import { View, Text } from '../../components.js'
 
 export default class Word extends React.Component {
   render() {
+    let { word } = this.props
     return (
-      <View>
         <Text>
-          { this.props.word }
+          { word }
         </Text>
-      </View>
     )
   }
 }

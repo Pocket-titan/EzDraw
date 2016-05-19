@@ -17,10 +17,7 @@ export default class Game extends React.Component {
       users: [],
       messages: [],
       artist: false,
-      drawArgs: null,
       word: null,
-      time: null,
-      shouldClear: false,
     }
   }
 
@@ -35,33 +32,22 @@ export default class Game extends React.Component {
       this.setState({ users: newUsers })
     })
 
-    socket.on('draw', drawArgs => {
-      this.setState({ drawArgs })
-    })
-
     socket.on('word', word => {
       let newWord = this.state.artist ? word : word.split('').map(letter => {return '_ '}).join('')
       this.setState({ word: newWord })
     })
 
-    socket.on('time', time => {
-      this.setState({ time })
-    })
-
     socket.on('endGame', () => {
-      this.setState({ artist: false, word: null, drawArgs: null })
+      this.setState({ artist: false })
     })
 
     socket.on('clearCanvas', () => {
-      this.setState({ shouldClear: true })
-      setTimeout(() => {
-        this.setState({ shouldClear: false })
-      }, 500)
+      this.setState({ word: null })
     })
 
     socket.on('artist', artist => {
+      //If it's us :o
       if (artist.username === this.props.username) {
-        //Game is starting here
         //You can draw now
         this.setState({ artist: true })
       }
@@ -69,7 +55,7 @@ export default class Game extends React.Component {
   }
 
   render() {
-    let { users, messages, artist, word, time, shouldClear } = this.state
+    let { users, messages, artist, word } = this.state
     let handleSubmit = event => {
       const body = event.target.value
       if (event.keyCode === 13 && body) {
@@ -82,23 +68,16 @@ export default class Game extends React.Component {
       }
     }
 
-    let emitDraw = drawArgs => {
-      socket.emit('draw', drawArgs)
-    }
     return (
-      <View style={{display: 'flex', flexDirection: 'row'}}>
-        <UserList users={users} />
+      <View style={{flexDirection: 'row'}}>
+        <UserList users={users}/>
         <CanvasContainer
           artist={artist}
-          width={700}
-          height={600}
-          emitDraw={emitDraw}
-          drawArgs={this.state.drawArgs}
+          width={750}
+          height={640}
           word={word}
-          time={time}
-          shouldClear={shouldClear}
         />
-      <Chat messages={messages} onSubmit={handleSubmit} />
+      <Chat messages={messages} onSubmit={handleSubmit} height={640}/>
       </View>
     )
   }

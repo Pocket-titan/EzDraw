@@ -1,11 +1,14 @@
 import React from 'react'
+import { findDOMNode } from 'react-dom'
+import '../../node_modules/bootstrap/dist/css/bootstrap.min.css'
+import { TextField } from 'material-ui'
 
-import { View, Text } from '../components.js'
+import { View, Text, Scroll } from '../components.js'
 
 let Message = (message, index) => {
   return (
-    <View>
-      <Text>
+    <View style={{flex: 0}}>
+      <Text style={message.style}>
         <b> { message.user }: </b>
         { message.body }
       </Text>
@@ -17,24 +20,40 @@ export default class Chat extends React.Component {
   render() {
     let { messages, onSubmit } = this.props
     return (
-      <View style={{display: 'flex', backgroundColor: 'blue', width: 400}}>
+      //Parent has relative, chat input has absolute: (stackoverflow)
+      //"Absolute positioning looks for the nearest relatively positioned parent within the DOM,
+      //if one isn't defined it will use the body."
+      <View
+        style={{display: 'block', position: 'relative', flex: 0.6}}
+        className="panel panel-default"
+      >
 
-        {/* Messages */}
-        <View style={{flexDirection: 'column'}}>
-          { messages.map(message => Message(message)) }
-        </View>
+        {/* Messages (thanks Michiel :D)*/}
+        <div style={{height: this.props.height, padding: 5}}>
+          <Scroll
+            style={{
+              maxHeight: this.props.height,
+              overflow: 'auto',
+              flexDirection: 'column',
+              display: 'block',
+              flex:0,
+              paddingLeft: 3,
+              alignItems: 'stretch',
+            }}
+            id="chat"
+            scrollTo={(h,s,c) => h === s ? c : s}
+          >
+            { messages.map(message => Message(message)) }
+          </Scroll>
+        </div>
 
         {/* Chat input */}
-        <View style={{
-            display: 'flex',
-            alignItems: 'flex-end',
-          }}
-        >
-          <input
-            style={{display: 'flex'}}
-            type="text"
-            placeholder="Chat here!"
+        <View>
+          <TextField
+            hintText="Chat here!"
+            fullWidth={true}
             onKeyUp={onSubmit}
+            style={{flex: 1, marginLeft: 7, marginRight: 7}}
           />
         </View>
 

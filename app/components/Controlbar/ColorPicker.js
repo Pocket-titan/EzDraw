@@ -1,6 +1,7 @@
 import React from 'react'
 import { SketchPicker } from 'react-color'
 import { View } from '../../components.js'
+import { Popover} from 'material-ui'
 
 export default class ColorPicker extends React.Component {
   constructor(props) {
@@ -17,8 +18,8 @@ export default class ColorPicker extends React.Component {
     let colorStyle = {
       width: 36,
       height: 22,
-      display: 'flex',
       borderRadius: 2,
+      flex: 1,
       background: this.state.color,
     }
 
@@ -26,24 +27,16 @@ export default class ColorPicker extends React.Component {
       padding: 5,
       background: '#fff',
       borderRadius: 1,
+      flex: 0,
+      display: 'flex',
       boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
-      display: 'inline-block',
       cursor: 'pointer',
     }
-    const popoverStyle = {
-      position: 'absolute',
-      zIndex: 2,
-    }
-    const coverStyle = {
-      position: 'fixed',
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-    }
 
-    let handleClick = () => {
-      this.setState({ displayColorPicker: !displayColorPicker })
+    let handleOpen = event => {
+      //to prevent ghost click
+      event.preventDefault()
+      this.setState({ displayColorPicker: true, anchorEl: event.currentTarget })
     }
 
     let handleClose = () => {
@@ -55,21 +48,23 @@ export default class ColorPicker extends React.Component {
       this.props.onChange(color)
     }
     return (
-      <View>
-        <View style={ swatchStyle } onClick={ handleClick }>
+      <div style={{padding: 5, paddingLeft: 6}}>
+        <View style={ swatchStyle } onClick={ handleOpen }>
           <View style={ colorStyle }/>
         </View>
-        { this.state.displayColorPicker ?
-          <View style={ popoverStyle }>
-            <View style={ coverStyle } onClick={ handleClose }/>
-            <SketchPicker
-              color={ this.state.color }
-              onChange={ handleColorChange }
-            />
-          </View> :
-          null
-        }
-      </View>
+        <Popover
+          open={this.state.displayColorPicker}
+          anchorEl={this.state.anchorEl}
+          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+          onRequestClose={ handleClose }
+        >
+          <SketchPicker
+            color={ this.state.color }
+            onChange={ handleColorChange }
+          />
+        </Popover>
+      </div>
     )
   }
 }

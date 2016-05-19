@@ -9,35 +9,33 @@ export default class CanvasContainer extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      brushColor: '#00000',
+      brushColor: '#020000',
       brushWidth: 5,
       toolName: 'Pencil',
     }
   }
   render() {
     let { brushColor, brushWidth, toolName } = this.state
-    let { word, artist, time } = this.props
+
     let onColorChange = color => {
       this.setState({ brushColor: color.hex })
     }
 
-    let onSizeChange = event => {
-      this.setState({ brushWidth: event.target.value })
+    let onSizeChange = (event, value) => {
+      this.setState({ brushWidth: value })
     }
 
     let onToolClick = newToolName => {
       this.setState({ toolName: newToolName })
     }
     return (
-      <View>
+      <View style={{flexDirection: 'column'}}>
         <ControlBar
-          onColorChange={onColorChange}
-          onSizeChange={onSizeChange}
+          {...this.props}
           color={brushColor}
+          onColorChange={onColorChange}
           size={brushWidth}
-          word={word}
-          artist={artist}
-          time={time}
+          onSizeChange={onSizeChange}
           onToolClick={onToolClick}
         />
         <Canvas
