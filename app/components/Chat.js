@@ -1,15 +1,18 @@
 import React from 'react'
-import { findDOMNode } from 'react-dom'
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import { TextField } from 'material-ui'
-
 import { View, Text, Scroll } from '../components.js'
 
-let Message = (message, index) => {
+let Message = (message, skin) => {
+  let serverStyle = {
+    color: skin.palette.serverText,
+    fontWeight: 800,
+  }
+  let style = message.server ? serverStyle : message.style
   return (
     <View style={{flex: 0}}>
-      <Text style={message.style}>
-        <b> { message.user }: </b>
+      <Text style={style}>
+        {message.user ? <b> { message.user }: </b> : null}
         { message.body }
       </Text>
     </View>
@@ -24,15 +27,21 @@ export default class Chat extends React.Component {
       //"Absolute positioning looks for the nearest relatively positioned parent within the DOM,
       //if one isn't defined it will use the body."
       <View
-        style={{display: 'block', position: 'relative', flex: 0.6}}
-        className="panel panel-default"
+        style={{
+          display: 'block',
+          position: 'relative',
+          backgroundColor: this.props.skin.palette.panelColor,
+          borderColor: this.props.skin.palette.borderColor,
+          borderTopRightRadius: 6,
+          borderBottomRightRadius: 6,
+        }}
       >
 
         {/* Messages (thanks Michiel :D)*/}
-        <div style={{height: this.props.height, padding: 5}}>
+        <div style={{height: this.props.height - 50, padding: 5}}>
           <Scroll
             style={{
-              maxHeight: this.props.height,
+              maxHeight: this.props.height - 50,
               overflow: 'auto',
               flexDirection: 'column',
               display: 'block',
@@ -43,7 +52,7 @@ export default class Chat extends React.Component {
             id="chat"
             scrollTo={(h,s,c) => h === s ? c : s}
           >
-            { messages.map(message => Message(message)) }
+            { messages.map(message => Message(message, this.props.skin)) }
           </Scroll>
         </div>
 

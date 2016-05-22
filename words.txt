@@ -1,0 +1,12 @@
+Bird
+Adolf
+Bicycle
+Car
+Painting
+Torch
+Chair
+Poster
+Bag
+Badge
+Gun
+Tyrannosaurus

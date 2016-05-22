@@ -9,9 +9,6 @@ module.exports = {
     inline: true,
     port: 3333,
   },
-  scripts: {
-    'start': 'webpack-dev-server',
-  },
   devtool: 'source-maps',
   module: {
     loaders: [
@@ -21,6 +18,7 @@ module.exports = {
         loader: 'babel?presets[]=react,presets[]=es2015,presets[]=stage-2',
       },
       { test: /\.css$/, loader: 'style-loader!css-loader' },
+      { test: /\.mp3$/, exclude: /node_modules/, loader: 'url-loader'},
       { test: /\.(woff|woff2|eot|ttf|svg)(\?.*$|$)/, exclude: /node_modules/, loader: 'url-loader?importLoaders=1&limit=100000' },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,

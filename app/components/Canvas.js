@@ -1,13 +1,12 @@
 import React from 'react'
 import { findDOMNode } from 'react-dom'
-import { View, Text } from '../components.js'
 
-//socket
-import socket from './Socket'
+//Socket
+import {Socket} from '../components.js'
 
 //Tools
-import Eraser from './Controlbar/Tools/Eraser'
-import Pencil from './Controlbar/Tools/Pencil'
+import Eraser from './Tools/Eraser'
+import Pencil from './Tools/Pencil'
 
 //Cursor image
 let pencilImg = require('../assets/fa2pencil.png')
@@ -27,11 +26,14 @@ export default class Canvas extends React.Component {
       mouseDown: false,
     }
   }
+
   componentDidMount() {
     this.canvas = findDOMNode(this)
     this.context = this.canvas.getContext('2d')
+    this.context.fillStyle = '#ffffff'
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
 
-    socket.on('draw', drawArgs => {
+    Socket.on('draw', drawArgs => {
       //If we're getting an existing drawing from an existing session
       if (drawArgs instanceof Array) {
         drawArgs.forEach(args => {
@@ -50,13 +52,7 @@ export default class Canvas extends React.Component {
         if (ownTool) {
           ownTool.draw(drawArgs)
         }
-        //also show the cursor!
       }
-    })
-
-    socket.on('clearCanvas', () => {
-      this.context.fillStyle = 'rgba(255, 255, 255, 1)'
-      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
     })
   }
 
@@ -66,6 +62,11 @@ export default class Canvas extends React.Component {
       if (newTool && newTool !== this.state.tool) {
         this.setState({ tool: newTool })
       }
+    }
+
+    if (nextProps.shouldClear) {
+      this.context.fillStyle = '#ffffff'
+      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
     }
   }
 
@@ -94,8 +95,7 @@ export default class Canvas extends React.Component {
           newMousePosition,
         }
         //Server will emit the drawings to everyone else
-        socket.emit('draw', drawArgs)
-        //Don't emit our own context
+        Socket.emit('draw', drawArgs)
         drawArgs.context = this.context
         tool.draw(drawArgs)
       }

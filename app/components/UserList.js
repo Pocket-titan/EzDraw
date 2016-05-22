@@ -1,40 +1,38 @@
 import React from 'react'
-import { div, Text } from '../components.js'
-import '../../node_modules/bootstrap/dist/css/bootstrap.min.css'
+import { Text, View, Dimensions } from '../components.js'
 import { Badge } from 'material-ui'
 
-let User = user => {
+//Animation
+import { star, panel } from '../style.css'
+
+let User = (user, skin) => {
   return (
-    <li className="list-group-item" style={{position: 'relative'}}>
+    <Text
+      className={panel}
+      style={{
+        position: 'relative',
+        backgroundColor: skin.palette.userBackgroundColor,
+        borderColor: skin.palette.borderColor,
+        borderStyle: 'solid',
+        borderWidth: 1,
+        borderTopWidth: 0,
+        padding: 15,
+      }}
+    >
+        {/* Our ranking */}
         <Text style={{position: 'absolute', left: 10}}>
           {user.position}
         </Text>
+
+        {/* Our username */}
         <Text>
           {user.username}
         </Text>
+
+        {/* A little star if we've guessed the word */}
         { user.guessed ?
-          <div>
-            <Text
-              className="fa fa-star"
-              style={{
-                position: 'absolute',
-                right: 43,
-                top: 12,
-                fontSize: 20,
-                color: 'yellow',
-              }}
-            />
-            <Text
-              className="fa fa-star-o"
-              style={{
-                position: 'absolute',
-                right: 43,
-                top: 12,
-                fontSize: 20,
-                color: 'black',
-              }}
-            />
-        </div> :
+          <div className={star} style={{position: 'absolute', right: 29, top: 1}}/> :
+        // Or a little brush if we're the artist
         (user.artist ?
           <div>
             <Text
@@ -42,41 +40,57 @@ let User = user => {
               style={{
                 position: 'absolute',
                 right: 43,
-                top: 11,
+                top: 15,
                 fontSize: 20,
                 color: 'black',
               }}
             />
           </div> : null)
         }
+
+        {/* Our score */}
         <Badge
           badgeContent={user.score}
           secondary={true}
-          style={{position: 'absolute', right: 10, top: 9, padding: 0}}
+          badgeStyle={{height: 27, width: 27, backgroundColor: skin.palette.accent1Color}}
+          style={{position: 'absolute', right: 10, top: 12, padding: 0}}
         />
-    </li>
+    </Text>
   )
 }
 
 export default class UserList extends React.Component {
   render() {
     return (
-      <div
-        style={{
-          flexDirection: 'column',
-          textAlign: 'center',
-          flex: 0.55,
-        }}
-        className="panel panel-default"
-      >
-        <div className="panel-body" style={{padding: 0}}>
-          <div className="list-group">
-            <Text className="list-group-item active">
+      <div style={{flex: 1}}>
+        <View
+          style={{
+            textAlign: 'center',
+            height: Dimensions.height,
+            backgroundColor: this.props.skin.palette.panelColor,
+            borderColor: this.props.skin.palette.borderColor,
+            borderTopLeftRadius: 6,
+            borderBottomLeftRadius: 6,
+          }}
+          className={panel}
+        >
+          <div style={{padding: 0, display: 'flex', flex: 1, flexDirection: 'column'}}>
+            <Text
+              className={panel}
+              style={{
+                backgroundColor: this.props.skin.palette.panelHeaderColor,
+                borderColor: this.props.skin.palette.borderColor,
+                padding: 11,
+                borderTopLeftRadius: 6,
+                borderBottomWidth: 1,
+                borderBottomStyle: 'solid',
+              }}
+            >
               Users
             </Text>
-            { this.props.users.map(user => User(user))}
+            { this.props.users.map(user => User(user, this.props.skin))}
           </div>
-        </div>
+        </View>
       </div>
     )
   }

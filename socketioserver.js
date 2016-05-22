@@ -1,69 +1,116 @@
 import socketIO from 'socket.io'
 import { map } from 'lodash'
+import fs from 'fs'
 
-let io = socketIO(3001)
+let io = socketIO(6666)
 let lobby = 'Lobby'
 //Initially, there are no users, and there is no game
 let users = []
 let currentGame = null
+let words = fs.readFileSync('./words.txt', 'utf8').split('\n')
 
 let updateUsers = () => {
+  // let userScores = mapValues(users, user => user.score)
+  let sortedUsers = users.sort((a,b) => {
+    return (a.score > b.score) ? -1 : (a.score === b.score ? 0 : 1)
+  })
+  let newUsers = users.map(user => {
+    let index = sortedUsers.findIndex(sortedUser => sortedUser === user)
+    user.position = index + 1
+    return user
+  })
+  users = newUsers
   io.sockets.in(lobby).emit('newUsers', users)
 }
 
-let sortUsers = () => {
-  users.sort((a,b) => {
-    return a.score > b.score ? -1 : 1
+let giveRandomLetter = () => {
+  //We store the indexes of the given letters in an array, and here we filter out the indexes
+  //of the letters we have already given
+  let wordIndexes = map(currentGame.word, (letter, index) => index)
+  let unguessedIndexes = wordIndexes.filter(letterIndex => {
+    let indexInGuessed = currentGame.lettersGiven.findIndex(givenLetterIndex => letterIndex === givenLetterIndex)
+    //If its not in lettersGiven, keep it, otherwise discard it
+    return indexInGuessed === -1 ? true : false
   })
-  let newUsers = map(users, user => {
-    let index = users.findIndex(userInArr => {
-      if (userInArr === user) {return true}
-    })
-    return {...user, position: index + 1}
-  })
-  users = newUsers
-  updateUsers()
+  let randomLetterIndex = unguessedIndexes[Math.floor(Math.random() * unguessedIndexes.length)]
+  currentGame.lettersGiven = [...currentGame.lettersGiven, randomLetterIndex]
+  io.sockets.in(lobby).emit('freeLetterIndex', {index: randomLetterIndex, letter: currentGame.word[randomLetterIndex]})
+}
+
+let getRandomWord = () => {
+  let randomWord = words[Math.floor(Math.random() * words.length)]
+  return randomWord
+}
+
+let getArtist = () => {
+  let newArtist = users[Math.floor(Math.random() * users.length)]
+  return newArtist
 }
 
 let startNewGame = () => {
+  //Initiate the countdown
+  io.sockets.in(lobby).emit('countdown')
+  //Make a new game
   let NewGame = new Game()
   currentGame = NewGame
-  io.sockets.in(lobby).emit('artist', currentGame.artist)
-  io.sockets.in(lobby).emit('word', currentGame.word)
-  io.sockets.in(lobby).emit('message', {
-    body: currentGame.artist.username + ' is going to draw!',
-    user: 'Server',
-    style: {color: 'red'},
-  })
-  let artistIndex = users.findIndex(user => user.username === currentGame.artist.username)
-  users[artistIndex].artist = true
-  updateUsers()
+  //After the countdown is done
+  setTimeout(() => {
+    //Only execute if enough Users
+    if (currentGame) {
+      //Start the timer
+      currentGame.startTimer()
+      //Emit the artist
+      io.sockets.in(lobby).emit('artist', currentGame.artist)
+      //Emit the word to guess
+      io.sockets.in(lobby).emit('word', currentGame.word)
+      //Emit the artist in a chat message
+      io.sockets.in(lobby).emit('message', {
+        body: currentGame.artist.username + ' is going to draw!',
+        //Optional server prop (gets own special style :D)
+        server: true,
+      })
+      //Give the artist an artist property
+      let artistIndex = users.findIndex(user => user.username === currentGame.artist.username)
+      users[artistIndex].artist = true
+      updateUsers()
+    }
+  }, 3000)
 }
 
 function Game() {
-  this.artist = users[Math.floor(Math.random() * users.length)]
-  this.word = 'Bird'
-  this.drawing = []
-  this.time = 151
-  this.timer = setInterval(() => {
-    this.time = this.time - 1
-    io.sockets.in(lobby).emit('time', this.time)
-    if (this.time === 0) {
-      this.endGame()
-    }
-  }, 1000)
+  //Map usernames
+  this.artist = getArtist()
+  this.word = getRandomWord()
+  this.lettersGiven = []
+  this.time = 90
+  // this.drawing = []
+  this.timer = null
+  this.startTimer = () => {
+      io.sockets.in(lobby).emit('time', this.time)
+      this.timer = setInterval(() => {
+        this.time = this.time - 1
+        io.sockets.in(lobby).emit('time', this.time)
+        if (this.time === 0) {
+          this.endGame()
+        }
+        //How many letters you're gonna get
+        let amountOfLetters = Math.floor(this.word.length / 3)
+        let atInterval = Math.floor(90 / (amountOfLetters + 1))
+        if (this.time % atInterval === 0 && this.time !== 0 && this.time !== 90) {
+          giveRandomLetter()
+        }
+      }, 1000)
+  }
   this.endGame = function() {
-    io.sockets.in(lobby).emit('message', {
-      body: 'Game is ending!',
-      user: 'Server',
-      style: {color: 'red'},
-    })
+    //Everyone can see the word now
+    io.sockets.in(lobby).emit('showWord', currentGame.word)
     currentGame = null
     clearInterval(this.timer)
     io.sockets.in(lobby).emit('endGame')
-    //If there are enough users, start a new game after 5 seconds
+    //If there are enough users after 5 seconds, start a new game
     setTimeout(() => {
       io.sockets.in(lobby).emit('clearCanvas')
+      io.sockets.in(lobby).emit('clearSpecialMessage')
       //Set guessed and artist of everyone to false
       users = map(users, user => {
         return { ...user, guessed: false, artist: false }
@@ -78,9 +125,15 @@ function Game() {
 }
 
 io.on('connection', socket => {
-  socket.join(lobby)
-  let myUsername = null
-
+  socket.on('approveUsername', username => {
+    let index = users.findIndex(user => user.username === username)
+    if (index === -1) {
+      socket.emit('usernameApproved', username)
+    }
+    else {
+      socket.emit('usernameDisapproved')
+    }
+  })
   socket.on('draw', drawArgs => {
     if (currentGame) {
       //Add to array to serve the drawing to new joiners
@@ -91,61 +144,81 @@ io.on('connection', socket => {
   })
 
   socket.on('addUser', username => {
-    users = [...users, {username, score: 0, guessed: false, position: users.length + 1, artist: false }]
-    myUsername = username
+    socket.username = username
+    socket.join(lobby)
+    socket.room = lobby
+    let me = {username, score: 0, guessed: false, position: users.length + 1, artist: false }
+    users = [...users, me]
     updateUsers()
 
-    //Serve the new user our currentGame info, if there is a game
     if (currentGame) {
       socket.emit('word', currentGame.word)
+      socket.emit('specialMessage', 'Wait for the next turn')
       // saving the drawing is too performance-heavy
       // socket.emit('draw', currentGame.drawing)
     }
+    else if (!currentGame) {
+      if (users.length < 2) {
+        socket.emit('specialMessage', 'Not enough players')
+      }
+    }
 
     //If someone joined and there is no new game, start a new one (after 10sec to not interfere with perhaps existing timeout)
-    if (!currentGame) {
-      setTimeout(() => {
-        if (users.length > 1) {
-          startNewGame()
-        }
-      }, 10000)
-    }
+    setTimeout(() => {
+      if (users.length > 1 && !currentGame) {
+        io.sockets.in(lobby).emit('clearCanvas')
+        io.sockets.in(lobby).emit('clearSpecialMessage')
+        //Set guessed and artist of everyone to false
+        users = map(users, user => {
+          return { ...user, guessed: false, artist: false }
+        })
+        updateUsers()
+        startNewGame()
+      }
+    }, 2000)
   })
 
   socket.on('disconnect', data => {
-    let index = users.findIndex(el => {
-      if (el.username === myUsername) {return true}
-    })
-    if (index !== -1) {users.splice(index, 1)}
-    sortUsers()
-    if (users.length < 2) {
-      if (currentGame) {
+    let index = users.findIndex(user => user.username === socket.username)
+    let ourUser = users[index]
+    //Find ourselves in the users array && remove us
+    if (index !== -1) {
+      users.splice(index, 1)
+      updateUsers()
+    }
+    //If we're the artist
+    if (currentGame && index !== -1) {
+      if (currentGame.artist.username === ourUser.artist) {
+        io.sockets.in(lobby).emit('specialMessage', 'The artist has left the game')
+        currentGame.endGame()
+      }
+      else if (users.length < 2) {
+        io.sockets.in(lobby).emit('specialMessage', 'Not enough players')
         currentGame.endGame()
       }
     }
+    //Goodbye cruel world
     socket.leave(lobby)
   })
 
   socket.on('message', message => {
     if (currentGame) {
       //If we guess the word and are not the artist ourselves
-      if (message.body === currentGame.word) {
-        if (currentGame.artist.username !== myUsername) {
-          let index = users.findIndex(el => {
-            if (el.username === myUsername) {return true}
-          })
-          //Update our score (if we havent guessed the word already)
-          if (!users[index].guessed) {
-            users[index].score = users[index].score + currentGame.calculateScore()
-            //We guessed it!
-            users[index].guessed = true
-            socket.emit('showWord', currentGame.word)
-            //Let them know, this will give them a star
-            sortUsers()
-            //If everyone guessed it, terminate the game
-            if (users.filter(user => user.guessed).length === users.length - 1) {
-              currentGame.endGame()
-            }
+      if (message.body.toLowerCase() === currentGame.word.toLowerCase() && currentGame.artist.username !== socket.username) {
+        let index = users.findIndex(user => user.username === socket.username)
+        //Update our score (if we havent guessed the word already)
+        if (index !== -1 && !users[index].guessed) {
+          users[index].score = users[index].score + currentGame.calculateScore()
+          //We guessed it!
+          users[index].guessed = true
+          socket.emit('showWord', currentGame.word)
+          socket.emit('playWinSound')
+          socket.emit('specialMessage', currentGame.word)
+          //Let them know, this will give them a star
+          updateUsers()
+          //If everyone guessed it, terminate the game
+          if (users.filter(user => user.guessed).length === users.length - 1) {
+            currentGame.endGame()
           }
         }
       }

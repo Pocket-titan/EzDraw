@@ -1,8 +1,15 @@
 import React from 'react'
 import { findDOMNode } from 'react-dom'
+import io from 'socket.io-client'
+
+export let Socket = io('https://jelmar.me:3040', { secure: true })
+
+export let Dimensions = {
+  height: 670,
+}
 
 export let View = ({ style, ...props }) =>
-  <div style={{display: 'flex', flex: 1, alignItems: 'stretch', ...style}} {...props} />
+  <div style={{display: 'flex', flex: 1, ...style}} {...props} />
 
 export let Text = 'span'
 

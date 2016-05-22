@@ -19,17 +19,14 @@
   "homepage": "https://github.com/Pocket-titan/EzDraw#readme",
   "dependencies": {
     "babel-plugin-transform-class-properties": "^6.8.0",
-    "body-parser": "^1.15.1",
     "bootstrap": "^3.3.6",
-    "express": "^4.13.4",
-    "http": "0.0.0",
     "material-ui": "^0.15.0",
     "react": "^15.0.2",
     "react-color": "^2.1.0",
     "react-dom": "^15.0.2",
     "reactcss": "^0.4.5",
-    "socket.io": "^1.4.6",
-    "webpack-dev-middleware": "^1.6.1"
+    "socket.io-client": "^1.4.6",
+    "velocity-react": "^1.1.5"
   },
   "devDependencies": {
     "babel": "^6.5.2",
