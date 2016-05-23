@@ -9,11 +9,13 @@ let users = []
 let currentGame = null
 let words = fs.readFileSync('./words.txt', 'utf8').split('\n')
 
+let rankUsers = users =>
+  users.slice()
+  .sort((a, b) => b.score - a.score)
+
 let updateUsers = () => {
+  let sortedUsers = rankUsers(users)
   // let userScores = mapValues(users, user => user.score)
-  let sortedUsers = users.sort((a,b) => {
-    return (a.score > b.score) ? -1 : (a.score === b.score ? 0 : 1)
-  })
   let newUsers = users.map(user => {
     let index = sortedUsers.findIndex(sortedUser => sortedUser === user)
     user.position = index + 1
@@ -42,16 +44,27 @@ let getRandomWord = () => {
   return randomWord
 }
 
-let getArtist = () => {
-  let newArtist = users[Math.floor(Math.random() * users.length)]
-  return newArtist
+let game = {
+  currentUserList: [],
 }
 
 let startNewGame = () => {
   //Initiate the countdown
   io.sockets.in(lobby).emit('countdown')
+
+  // Take things from game object and transform them
+  let [nextUser, ...nextUserList] =
+    game.currentUserList.length === 0
+    ? game.currentUserList
+    : rankUsers(users)
+
+  // Update them for the new game
+  game = {
+    currentUserList: nextUserList,
+  }
+
   //Make a new game
-  let NewGame = new Game()
+  let NewGame = new Game(nextUser)
   currentGame = NewGame
   //After the countdown is done
   setTimeout(() => {
@@ -77,9 +90,9 @@ let startNewGame = () => {
   }, 3000)
 }
 
-function Game() {
+function Game(artist) {
   //Map usernames
-  this.artist = getArtist()
+  this.artist = artist
   this.word = getRandomWord()
   this.lettersGiven = []
   this.time = 90
