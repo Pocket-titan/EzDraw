@@ -2,7 +2,9 @@ import React from 'react'
 import { findDOMNode } from 'react-dom'
 import io from 'socket.io-client'
 
-export let Socket = io('https://jelmar.me:3040', { secure: true })
+// let URL = 'https://jelmar.me:3040/'
+let URL = 'http://localhost:3040'
+export let Socket = io.connect(URL, /*, {secure: true}*/)
 
 export let Dimensions = {
   height: 670,

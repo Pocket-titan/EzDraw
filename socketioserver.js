@@ -1,8 +1,12 @@
-import socketIO from 'socket.io'
 import { map } from 'lodash'
 import fs from 'fs'
+import socketIO from 'socket.io'
 
-let io = socketIO(6666)
+//Local server to test: run "npm run server"
+let io = socketIO(3040)
+
+//The Game Part
+
 let lobby = 'Lobby'
 //Initially, there are no users, and there is no game
 let users = []

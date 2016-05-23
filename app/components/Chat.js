@@ -1,6 +1,5 @@
 import React from 'react'
-import '../../node_modules/bootstrap/dist/css/bootstrap.min.css'
-import { TextField } from 'material-ui'
+import { TextField } from '../../material-ui'
 import { View, Text, Scroll } from '../components.js'
 
 let Message = (message, skin) => {

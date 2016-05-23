@@ -1,10 +1,10 @@
 import React from 'react'
 import { View } from '../components.js'
 import io from 'socket.io-client'
-import '../../node_modules/bootstrap/dist/css/bootstrap.min.css'
-import { TextField } from 'material-ui'
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import { TextField } from '../../material-ui'
+import getMuiTheme from '../../material-ui/styles/getMuiTheme'
+import MuiThemeProvider from '../../material-ui/styles/MuiThemeProvider'
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 //Components
 import Game from './Game'
@@ -15,7 +15,9 @@ import Jungle from './Skins/Jungle'
 import Goldfish from './Skins/Goldfish'
 
 //To handle https
-let socket = io('https://jelmar.me:3040', {secure: true})
+// let URL = 'https://jelmar.me:3040/'
+let URL = 'http://localhost:3040'
+let socket = io.connect(URL/*, {secure: true}*/)
 const defaultSkin = Coffee
 
 let Skins = [{

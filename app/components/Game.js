@@ -2,15 +2,17 @@ import React from 'react'
 import io from 'socket.io-client'
 
 import { View, Dimensions } from '../components.js'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-let winSound = require('../assets/kids_cheering.mp3')
+import MuiThemeProvider from '../../material-ui/styles/MuiThemeProvider'
+// let winSound = require('../assets/kids_cheering.mp3')
 
 //Components
 import UserList from './UserList'
 import Chat from './Chat'
 import CanvasContainer from './CanvasContainer'
 
-let socket = io('https://jelmar.me:3040', {secure: true})
+// let URL = 'https://jelmar.me:3040/'
+let URL = 'http://localhost:3040'
+let socket = io.connect(URL /*, {secure: true}*/)
 
 let SkinNames = [{
   name: 'Coffee',
@@ -98,10 +100,10 @@ export default class Game extends React.Component {
       }
     })
 
-    socket.on('playWinSound', () => {
-      let audio = new Audio(winSound)
-      audio.play()
-    })
+    // socket.on('playWinSound', () => {
+    //   let audio = new Audio(winSound)
+    //   audio.play()
+    // })
 
     socket.on('countdown', () => {
       this.setState({ countdown: 3 })

@@ -1,7 +1,6 @@
 import React from 'react'
 import { View, Text } from '../components.js'
-import '../../node_modules/bootstrap/dist/css/bootstrap.min.css'
-import '../../font-awesome-4.6.3/css/font-awesome.min.css'
+import 'font-awesome/css/font-awesome.min.css'
 import { IconButton, Badge } from 'material-ui'
 import { panel } from '../style.css'
 
