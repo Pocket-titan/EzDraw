@@ -2,7 +2,7 @@ import React from 'react'
 import io from 'socket.io-client'
 
 import { View, Dimensions } from '../components.js'
-import MuiThemeProvider from '../../material-ui/styles/MuiThemeProvider'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 // let winSound = require('../assets/kids_cheering.mp3')
 
 //Components

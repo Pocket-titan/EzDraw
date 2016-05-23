@@ -77,7 +77,7 @@ export default class ControlBar extends React.Component {
           max={20}
           onChange={(e,value) => onSizeChange(e, value)}
           defaultValue={size}
-          style={{height: 18, marginLeft: 0, color: 'red', width: 200, paddingRight: 10}}
+          style={{height: 18, marginLeft: 0, color: 'red', width: 200, paddingRight: 10, marginTop: -40}}
         />
       </View>
     )

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text, View, Dimensions } from '../components.js'
-import { Badge } from '../../material-ui'
+import { Badge } from 'material-ui'
 
 //Animation
 import { star, panel } from '../style.css'

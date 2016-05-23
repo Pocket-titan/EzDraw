@@ -1,4 +1,4 @@
-import backupFileLoader from './backupFileLoader.js'
+var path = require('path')
 
 module.exports = {
   entry: './app/main.js',
@@ -14,7 +14,10 @@ module.exports = {
         loader: 'babel?presets[]=react,presets[]=es2015,presets[]=stage-2',
       },
       { test: /\.css$/, loader: 'style-loader!css-loader' },
-      { test: /\.[^j][^s][^.]*$/, loader: backupFileLoader },
+      {
+        test: /\.[^j][^s][^.]*$/,
+        loader: path.join(__dirname, '/backup-file-loader.js?hash=sha512&digest=hex&name=[hash].[ext]'),
+      },
     ],
   },
 }

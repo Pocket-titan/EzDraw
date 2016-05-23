@@ -1,9 +1,9 @@
 import React from 'react'
 import { View } from '../components.js'
 import io from 'socket.io-client'
-import { TextField } from '../../material-ui'
-import getMuiTheme from '../../material-ui/styles/getMuiTheme'
-import MuiThemeProvider from '../../material-ui/styles/MuiThemeProvider'
+import { TextField } from 'material-ui'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 //Components

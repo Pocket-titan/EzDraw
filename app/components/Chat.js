@@ -1,5 +1,5 @@
 import React from 'react'
-import { TextField } from '../../material-ui'
+import { TextField } from 'material-ui'
 import { View, Text, Scroll } from '../components.js'
 
 let Message = (message, skin) => {

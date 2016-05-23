@@ -1,7 +1,7 @@
 import React from 'react'
 import { SketchPicker } from 'react-color'
 import { View } from '../components.js'
-import { Popover} from '../../material-ui'
+import { Popover} from 'material-ui'
 
 export default class ColorPicker extends React.Component {
   constructor(props) {

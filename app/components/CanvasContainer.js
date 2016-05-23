@@ -1,7 +1,7 @@
 import React from 'react'
 import { Text, Dimensions } from '../components.js'
 import VelocityComponent from 'velocity-react/velocity-component'
-import MuiThemeProvider from '../../material-ui/styles/MuiThemeProvider'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 //Components
 import Canvas from './Canvas'
