@@ -3,12 +3,11 @@ import { Text, View, Dimensions } from '../components.js'
 import { Badge } from 'material-ui'
 
 //Animation
-import { star, panel } from '../style.css'
+import { star } from '../style.css'
 
-let User = (user, skin) => {
+let User = (user, index, skin) => {
   return (
     <Text
-      className={panel}
       style={{
         position: 'relative',
         backgroundColor: skin.palette.userBackgroundColor,
@@ -21,7 +20,7 @@ let User = (user, skin) => {
     >
         {/* Our ranking */}
         <Text style={{position: 'absolute', left: 10}}>
-          {user.position}
+          {index + 1}
         </Text>
 
         {/* Our username */}
@@ -72,11 +71,9 @@ export default class UserList extends React.Component {
             borderTopLeftRadius: 6,
             borderBottomLeftRadius: 6,
           }}
-          className={panel}
         >
           <div style={{padding: 0, display: 'flex', flex: 1, flexDirection: 'column'}}>
             <Text
-              className={panel}
               style={{
                 backgroundColor: this.props.skin.palette.panelHeaderColor,
                 borderColor: this.props.skin.palette.borderColor,
@@ -88,7 +85,7 @@ export default class UserList extends React.Component {
             >
               Users
             </Text>
-            { this.props.users.map(user => User(user, this.props.skin))}
+            { this.props.users.map((user, index) => User(user, index, this.props.skin))}
           </div>
         </View>
       </div>

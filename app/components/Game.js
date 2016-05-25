@@ -1,7 +1,7 @@
 import React from 'react'
-import io from 'socket.io-client'
+import io from 'Socket.io-client'
 
-import { View, Dimensions } from '../components.js'
+import { View, Socket, Dimensions } from '../components.js'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 // let winSound = require('../assets/kids_cheering.mp3')
 
@@ -9,10 +9,6 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import UserList from './UserList'
 import Chat from './Chat'
 import CanvasContainer from './CanvasContainer'
-
-// let URL = 'https://jelmar.me:3040/'
-let URL = 'http://localhost:3040'
-let socket = io.connect(URL /*, {secure: true}*/)
 
 let SkinNames = [{
   name: 'Coffee',
@@ -35,77 +31,65 @@ export default class Game extends React.Component {
       artist: false,
       word: null,
       specialMessage: null,
-      shouldClear: false,
       time: null,
       countdown: null,
     }
   }
 
   componentDidMount() {
-    socket.emit('addUser', this.props.username)
+    Socket.on('time', time => this.setState({ time }))
 
-    socket.on('time', time => {
-      this.setState({ time })
-    })
+    Socket.on('users', users => this.setState({ users }))
 
-    socket.on('message', message => {
-      this.setState({ messages: [...this.state.messages, message] })
-    })
+    Socket.on('startGame', ({artist, word}) => {
+      // Clear the canvas
 
-    socket.on('newUsers', newUsers => {
-      this.setState({ users: newUsers })
-    })
+      // Make sure to remove the brushe next to the name of the previous artist
+      let newUsers = this.state.users.map(user => {
+        return {
+          ...user,
+          artist: false,
+        }
+      })
+      this.setState({ users: newUsers})
 
-    socket.on('word', word => {
-      let newWord = this.state.artist ? word : word.split('').map(letter => {return '_'}).join('')
-      this.setState({ word: newWord })
-    })
-
-    socket.on('showWord', word => this.setState({ word }))
-
-    socket.on('freeLetterIndex', letter => {
-      let newWord = this.state.word.split('').map((oldLetter, index) => {
-        return (index === letter.index) ? letter.letter : oldLetter
-      }).join('')
-      this.setState({ word: newWord })
-    })
-
-    socket.on('specialMessage', message => {
-      this.setState({ specialMessage: message })
-    })
-
-    socket.on('clearCanvas', () => {
-      //Not pretty but it works
-      this.setState({ shouldClear: true })
-      this.setState({ shouldClear: false })
-    })
-
-    socket.on('clearSpecialMessage', () => {
-      this.setState({ specialMessage: null })
-    })
-
-    socket.on('endGame', () => {
-      this.setState({ artist: false })
-    })
-
-    socket.on('clearCanvas', () => {
-      this.setState({ word: null })
-    })
-
-    socket.on('artist', artist => {
-      //If it's us :o
+      // Set the artist
       if (artist.username === this.props.username) {
-        //You can draw now
-        this.setState({ artist: true })
+        //As artist we can see the whole word
+        this.setState({ artist: true, word })
+      }
+      else {
+        this.setState({ word: word.split('').map(letter => '_').join('') })
+      }
+      let artistUserIndex = this.state.users.map(user => user.username).findIndex(username => username === artist.username)
+      let artistUser = this.state.users[artistUserIndex]
+      artistUser.artist = true
+    })
+
+    Socket.on('freeLetter', ({letter, index}) => {
+      if (!this.state.artist) {
+        let newWord = this.state.word.substring(0, index) + letter + this.state.word.substring(index + 1)
+        this.setState({ word: newWord })
       }
     })
 
-    // socket.on('playWinSound', () => {
-    //   let audio = new Audio(winSound)
-    //   audio.play()
-    // })
+    Socket.on('message', message => {
+      this.setState({ messages: [...this.state.messages, message] })
+    })
 
-    socket.on('countdown', () => {
+    Socket.on('endGame', () => {
+      this.setState({ artist: false })
+    })
+
+    Socket.on('guessed', word => {
+      this.setState({ word })
+      // Display special message word
+      // let audio = new Audio(winSound)
+      // TODO tweak volume = too loud currently
+      // audio.play()
+    })
+
+    Socket.on('countdown', () => {
       this.setState({ countdown: 3 })
       let timer = setInterval(() => {
         let newCountdown = this.state.countdown - 1
@@ -121,7 +105,6 @@ export default class Game extends React.Component {
   }
 
   render() {
-    let { users, messages, artist, word, specialMessage } = this.state
     let setSkin = skinName => {
       this.props.setSkin(skinName)
     }
@@ -182,12 +165,13 @@ export default class Game extends React.Component {
             body,
             user: this.props.username,
           }
-          socket.emit('message', message)
+          Socket.emit('message', message)
         }
         event.target.value = ''
       }
     }
 
+    let { users, messages, artist, word, specialMessage, time, countdown } = this.state
     return (
       <View style={{flexDirection: 'row', justifyContent: 'center'}}>
         <MuiThemeProvider muiTheme={this.props.skin}>
@@ -195,13 +179,12 @@ export default class Game extends React.Component {
         </MuiThemeProvider>
         <CanvasContainer
           artist={artist}
+          word={word}
+          time={time}
+          specialMessage={specialMessage}
+          countdown={countdown}
           width={750}
           height={Dimensions.height}
-          word={word}
-          specialMessage={specialMessage}
-          shouldClear={this.state.shouldClear}
-          time={this.state.time}
-          countdown={this.state.countdown}
           skin={this.props.skin}
         />
       <MuiThemeProvider muiTheme={this.props.skin}>

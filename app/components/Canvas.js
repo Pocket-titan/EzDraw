@@ -2,7 +2,7 @@ import React from 'react'
 import { findDOMNode } from 'react-dom'
 
 //Socket
-import {Socket} from '../components.js'
+import { Socket } from '../components.js'
 
 //Tools
 import Eraser from './Tools/Eraser'
@@ -54,6 +54,11 @@ export default class Canvas extends React.Component {
         }
       }
     })
+
+    Socket.on('clearCanvas', () => {
+      this.context.fillStyle = '#ffffff'
+      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -62,11 +67,6 @@ export default class Canvas extends React.Component {
       if (newTool && newTool !== this.state.tool) {
         this.setState({ tool: newTool })
       }
-    }
-
-    if (nextProps.shouldClear) {
-      this.context.fillStyle = '#ffffff'
-      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
     }
   }
 

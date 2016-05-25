@@ -20,10 +20,11 @@ let rankUsers = users =>
 let updateUsers = () => {
   let sortedUsers = rankUsers(users)
   // let userScores = mapValues(users, user => user.score)
-  let newUsers = users.map(user => {
-    let index = sortedUsers.findIndex(sortedUser => sortedUser === user)
-    user.position = index + 1
-    return user
+  let newUsers = users.map((user, index) => {
+    return {
+      ...user,
+      position: index + 1,
+    }
   })
   users = newUsers
   io.sockets.in(lobby).emit('newUsers', users)

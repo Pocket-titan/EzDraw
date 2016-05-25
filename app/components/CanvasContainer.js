@@ -54,7 +54,6 @@ export default class CanvasContainer extends React.Component {
           brushWidth={brushWidth}
           toolName={toolName}
           style={{position: 'relative'}}
-          shouldClear={this.props.shouldClear}
         />
       <Text style={{position: 'absolute', 'top': '20vh', 'left': '43vw', fontSize: 300, fontWeight: 800}}>
         { this.props.countdown }

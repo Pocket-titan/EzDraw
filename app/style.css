@@ -1,5 +1,4 @@
 :local(.star) {
-  cursor: pointer;
   height: 50px;
   width: 50px;
   background-image:url( './assets/star_animation.png');
@@ -12,6 +11,15 @@
 @keyframes star-burst {
   from {background-position:left;}
   to { background-position:right;}
+}
+
+:local(.panel) {
+  flex: 0;
+  flex-direction: column;
+  border-radius: 6px;
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Scrollbar */

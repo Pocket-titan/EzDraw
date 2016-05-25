@@ -2,7 +2,6 @@ import React from 'react'
 import { View, Text } from '../components.js'
 import 'font-awesome/css/font-awesome.min.css'
 import { IconButton, Badge } from 'material-ui'
-import { panel } from '../style.css'
 
 //Components
 import ColorPicker from './ColorPicker'
@@ -29,7 +28,6 @@ export default class ControlBar extends React.Component {
           backgroundColor: this.props.skin.palette.panelColor,
           borderColor: this.props.skin.palette.borderColor,
         }}
-        className={panel}
       >
         <div style={{alignItems: 'center', display: 'flex'}}>
           {/* Colorpicker */}
