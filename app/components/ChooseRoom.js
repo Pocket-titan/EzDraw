@@ -47,7 +47,7 @@ export default class ChooseRoom extends React.Component {
 
           {/* Existing rooms */}
           <View style={{flexDirection: 'column', height: 200, width: '100%'}}>
-            { rooms ? rooms.map(room =>
+            { rooms.length > 0 ? rooms.map(room =>
               <View
                 style={{
                   backgroundColor: this.props.skin.palette.userBackgroundColor,
@@ -75,7 +75,7 @@ export default class ChooseRoom extends React.Component {
                 </Text>
               </View>
             )
-            : null}
+            : <Text style={{textAlign: 'center', fontStyle: 'italic', fontWeight: 300}}> No rooms yet! </Text>}
           </View>
 
           {/* Room name for creating a room */}
