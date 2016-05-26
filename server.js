@@ -19,17 +19,26 @@ let getRandomWord = () => {
   return randomWord
 }
 
+// Rank the users
+let rankUsers = xs =>
+  xs.slice()
+  .sort((a,b) => b.score - a.score)
+
 // Creating a new game
-let createNewGame = players => {
+let createNewGame = (players, artist) => {
   let Game = {
     time: 90,
     players,
     lettersGiven: [],
     word: getRandomWord(),
-    artist: players[ Math.floor(Math.random() * players.length) ],
+    artist: artist,
   }
   return Game
 }
+
+io.on('listening', () => {
+  console.log('Server accepting connections')
+})
 
 io.on('connection', socket => {
   //Autojoin lobby, a general purpose room for creating & joining a room
@@ -55,11 +64,6 @@ io.on('connection', socket => {
       socket.emit('usernameDisapproved')
     }
   })
-
-  // Rank the users
-  let rankUsers = users =>
-    users.slice()
-    .sort((a,b) => b.score - a.score)
 
   // Update the users in the lobby
   let updateUsers = () => {
@@ -111,6 +115,7 @@ io.on('connection', socket => {
         roomName: newRoomName,
         users: [],
         currentGame: null,
+        nextUp: [],
         startGame() {
           // Here we start a Game
           // First we do a countdown of 3 seconds
@@ -127,7 +132,12 @@ io.on('connection', socket => {
           updateUsers()
 
           // Create a new game
-          this.currentGame = createNewGame(this.users)
+          if (this.nextUp.length === 0) {
+            this.nextUp = rankUsers(this.users)
+          }
+          let [currentUser, ...nextUp] = this.nextUp
+          this.currentGame = createNewGame(this.users, currentUser)
+          this.nextUp = nextUp
 
           //Do this after the countdown has finished
           setTimeout(() => {
@@ -278,3 +288,5 @@ io.on('connection', socket => {
     }
   })
 })
+
+console.log('Listening on :3040')
