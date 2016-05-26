@@ -115,7 +115,9 @@ io.on('connection', socket => {
           // Here we start a Game
           // First we do a countdown of 3 seconds
           io.sockets.in(this.roomName).emit('countdown')
+          // TODO group clearCanvas and clearSpecialMessage into a 'cleanup' event
           io.sockets.in(this.roomName).emit('clearCanvas')
+          io.sockets.in(this.roomName).emit('clearSpecialMessage')
 
           // Update users to get rid of the stars / artists
           this.users = this.users.map(user => {
@@ -130,7 +132,11 @@ io.on('connection', socket => {
           this.currentGame = createNewGame(this.users)
 
           //Do this after the countdown has finished
+          // But only if therre is still a game
           setTimeout(() => {
+            if (!this.currentGame) {
+              return;
+            }
             //How many letters you're gonna get
             let amountOfLetters = Math.floor(this.currentGame.word.length / 3)
             let atInterval = Math.floor(90 / (amountOfLetters + 1))
@@ -211,6 +217,7 @@ io.on('connection', socket => {
     }
     // If we are leaving an active game and the remaining users.length < 2
     if (currentRoom.currentGame && currentRoom.users.length < 2) {
+      io.sockets.in(currentRoom.roomName).emit('specialMessage', 'Not enough players')
       currentRoom.endGame()
     }
     socket.leave(socket.roomName)
@@ -228,12 +235,14 @@ io.on('connection', socket => {
         let ourIndex = currentRoom.users.map(user => user.username).findIndex(username => username === socket.user.username)
         let ourUser = currentRoom.users[ourIndex]
         if (currentRoom.currentGame.artist.username !== socket.user.username && !ourUser.guessed) {
+          // We guessed it!
           // Calculate score
           ourUser.score = ourUser.score + currentRoom.currentGame.time
           // Set guessed to true
           ourUser.guessed = true
           // Let the user know they guessed it (show the word && gives star && plays sound)
           updateUsers()
+          // This also results in a 'specialMessage' of currentGame.word
           socket.emit('guessed', currentRoom.currentGame.word)
           // If everyone guessed it (except the artist), end the game
           let guessers = currentRoom.users.filter(user => user.guessed ? true : false)

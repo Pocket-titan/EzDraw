@@ -42,8 +42,6 @@ export default class Game extends React.Component {
     Socket.on('users', users => this.setState({ users }))
 
     Socket.on('startGame', ({artist, word}) => {
-      // Clear the canvas
-
       // Make sure to remove the brushe next to the name of the previous artist
       let newUsers = this.state.users.map(user => {
         return {
@@ -82,11 +80,21 @@ export default class Game extends React.Component {
     })
 
     Socket.on('guessed', word => {
-      this.setState({ word })
+      // Capitalize the specialMessage
+      let specialMessage = word[0].toUpperCase() + word.slice(1)
+      this.setState({ word, specialMessage })
       // Display special message word
       // let audio = new Audio(winSound)
       // TODO tweak volume = too loud currently
       // audio.play()
+    })
+
+    Socket.on('specialMessage', specialMessage => {
+      this.setState({ specialMessage })
+    })
+
+    Socket.on('clearSpecialMessage', () => {
+      this.setState({ specialMessage: null })
     })
 
     Socket.on('countdown', () => {
