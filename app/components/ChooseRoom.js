@@ -70,7 +70,7 @@ export default class ChooseRoom extends React.Component {
                 </Text>
 
                 {/* Users currently in room */}
-                <Text style={{position: 'absolute', right: 10}}>
+                <Text style={{position: 'absolute', right: 15, bottom: 9}}>
                   {room.users.length}
                 </Text>
               </View>
@@ -81,7 +81,7 @@ export default class ChooseRoom extends React.Component {
           {/* Room name for creating a room */}
           <MuiThemeProvider muiTheme={getMuiTheme(this.props.skin)}>
             <TextField
-              hintText="Create a room"
+              hintText="Create a new room"
               errorText={errorText}
               errorStyle={{color: this.props.skin.palette.errorColor}}
               onKeyUp={onRoomSubmit}
