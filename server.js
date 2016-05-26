@@ -179,6 +179,13 @@ io.on('connection', socket => {
               artist: this.currentGame.artist,
               word: this.currentGame.word,
             })
+
+            // Send the artist in a chat messages
+            io.sockets.in(this.roomName).emit('message', {
+              body: this.currentGame.artist.username + ' is going to draw!',
+              //Optional server prop (gets own special style :D)
+              server: true,
+            })
           }, 3000)
         },
         endGame() {
