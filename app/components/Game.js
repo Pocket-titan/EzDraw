@@ -1,5 +1,5 @@
 import React from 'react'
-import io from 'Socket.io-client'
+import io from 'socket.io-client'
 
 import { View, Socket, Dimensions } from '../components.js'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
