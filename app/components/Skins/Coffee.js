@@ -1,5 +1,5 @@
-import Colors from 'material-ui/lib/styles/colors';
-import ColorManipulator from 'material-ui/lib/utils/color-manipulator';
+import * as Colors from 'material-ui/styles/colors';
+import * as ColorManipulator from 'material-ui/utils/colorManipulator';
 
 export default {
   palette: {
