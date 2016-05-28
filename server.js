@@ -29,6 +29,7 @@ let createNewGame = (players, artist) => {
   let Game = {
     time: 90,
     players,
+    scoreFactor: 1,
     lettersGiven: [],
     word: getRandomWord(),
     artist: artist,
@@ -192,7 +193,7 @@ io.on('connection', socket => {
           this.currentGame = null
           io.sockets.in(this.roomName).emit('endGame')
           setTimeout(() => {
-            if (this.users.length > 1) {
+            if (this.users.length > 1 && !this.currentGame) {
               this.startGame()
             }
           }, 10000)
@@ -215,8 +216,11 @@ io.on('connection', socket => {
       joinRoom(newRoomName)
     }
     let room = rooms[roomIndex]
+    if (room.currentGame) {
+      io.sockets.in(room.roomName).emit('specialMessage', 'Wait for the next turn')
+    }
     setTimeout(() => {
-      if (room.users.length > 1) {
+      if (room.users.length > 1 && !room.currentGame) {
         room.startGame()
       }
     }, 3000)
@@ -253,8 +257,13 @@ io.on('connection', socket => {
         let ourUser = currentRoom.users[ourIndex]
         if (currentRoom.currentGame.artist.username !== socket.user.username && !ourUser.guessed) {
           // We guessed it!
-          // Calculate score
-          ourUser.score = ourUser.score + currentRoom.currentGame.time
+          // Calculate guesser score
+          ourUser.score = ourUser.score + Math.round(currentRoom.currentGame.time / currentRoom.currentGame.scoreFactor)
+          currentRoom.currentGame.scoreFactor = currentRoom.currentGame.scoreFactor + 1
+          // Give the artist some points too for drawing well
+          let artistIndex = currentRoom.users.map(user => user.username).findIndex(username => username === currentRoom.currentGame.artist.username)
+          // Artist gets more score if more users guess, inverse of scoreFactor for guessers
+          currentRoom.users[artistIndex].score = currentRoom.users[artistIndex].score + Math.round(currentRoom.currentGame.time * currentRoom.currentGame.scoreFactor / 7)
           // Set guessed to true
           ourUser.guessed = true
           // Let the user know they guessed it (show the word && gives star && plays sound)
@@ -263,7 +272,7 @@ io.on('connection', socket => {
           socket.emit('guessed', currentRoom.currentGame.word)
           // If everyone guessed it (except the artist), end the game
           let guessers = currentRoom.users.filter(user => user.guessed ? true : false)
-          if (guessers.length === currentRoom.users.length - 1) {
+          if (guessers.length === currentRoom.currentGame.players.length - 1) {
             currentRoom.endGame()
           }
         }
@@ -296,6 +305,10 @@ io.on('connection', socket => {
 
   // On disconnect
   socket.on('disconnect', data => {
+    // If we never even entered a username
+    if (!socket.user) {
+      return;
+    }
     let ourIndex = users.map(user => user.username).findIndex(username => username === socket.user.username)
     users.splice(ourIndex, 1)
     if (socket.roomName) {

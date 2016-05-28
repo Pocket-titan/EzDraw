@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Socket } from '../components.js'
+import { View } from '../components.js'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import 'bootstrap/dist/css/bootstrap.min.css'
 

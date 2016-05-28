@@ -3,7 +3,7 @@ import io from 'socket.io-client'
 
 import { View, Socket, Dimensions } from '../components.js'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-// let winSound = require('../assets/kids_cheering.mp3')
+let winSound = require('../assets/kids_cheering.mp3')
 
 //Components
 import UserList from './UserList'
@@ -17,7 +17,6 @@ let SkinNames = [{
 }, {
   name: 'Goldfish',
 }]
-
 
 export default class Game extends React.Component {
   constructor(props) {
@@ -82,11 +81,12 @@ export default class Game extends React.Component {
     Socket.on('guessed', word => {
       // Capitalize the specialMessage
       let specialMessage = word[0].toUpperCase() + word.slice(1)
-      this.setState({ word, specialMessage })
       // Display special message word
-      // let audio = new Audio(winSound)
+      this.setState({ word, specialMessage })
+      let audio = new Audio(winSound)
+      audio.volume = 0.5
       // TODO tweak volume = too loud currently
-      // audio.play()
+      audio.play()
     })
 
     Socket.on('specialMessage', specialMessage => {

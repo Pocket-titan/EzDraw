@@ -47,35 +47,38 @@ export default class ChooseRoom extends React.Component {
 
           {/* Existing rooms */}
           <View style={{flexDirection: 'column', height: 200, width: '100%'}}>
-            { rooms.length > 0 ? rooms.map(room =>
-              <View
-                style={{
-                  backgroundColor: this.props.skin.palette.userBackgroundColor,
-                  borderColor: this.props.skin.palette.borderColor,
-                  borderStyle: 'solid',
-                  borderWidth: 1,
-                  padding: 20,
-                  flex: 0,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 6,
-                  position: 'relative',
-                  cursor: 'pointer',
-                }}
-                onClick={() => onRoomClick(room.roomName)}
-              >
-                {/* Room name */}
-                <Text>
-                  {room.roomName}
-                </Text>
+            { rooms
+              ? rooms.length > 0
+                ? rooms.map(room =>
+                <View
+                  style={{
+                    backgroundColor: this.props.skin.palette.userBackgroundColor,
+                    borderColor: this.props.skin.palette.borderColor,
+                    borderStyle: 'solid',
+                    borderWidth: 1,
+                    padding: 20,
+                    flex: 0,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 6,
+                    position: 'relative',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => onRoomClick(room.roomName)}
+                >
+                  {/* Room name */}
+                  <Text>
+                    {room.roomName}
+                  </Text>
 
-                {/* Users currently in room */}
-                <Text style={{position: 'absolute', right: 15, bottom: 9}}>
-                  {room.users.length}
-                </Text>
-              </View>
-            )
-            : <Text style={{textAlign: 'center', fontStyle: 'italic', fontWeight: 300}}> No rooms yet! </Text>}
+                  {/* Users currently in room */}
+                  <Text style={{position: 'absolute', right: 15, bottom: 9}}>
+                    {room.users.length}
+                  </Text>
+                </View>
+              )
+              : <Text style={{textAlign: 'center', fontStyle: 'italic', fontWeight: 300}}> No rooms yet! </Text>
+            : null}
           </View>
 
           {/* Room name for creating a room */}
