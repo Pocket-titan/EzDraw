@@ -310,6 +310,7 @@ io.on('connection', socket => {
       return;
     }
     let ourIndex = users.map(user => user.username).findIndex(username => username === socket.user.username)
+    // Only remove our user if it is found in our userlist
     if (ourIndex !== -1) {
         users.splice(ourIndex, 1)
     }
