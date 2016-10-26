@@ -310,11 +310,12 @@ io.on('connection', socket => {
       return;
     }
     let ourIndex = users.map(user => user.username).findIndex(username => username === socket.user.username)
+    console.log('OurIndex:', ourIndex)
     users.splice(ourIndex, 1)
     if (socket.roomName) {
       leaveRoom()
-      updateUsers()
     }
+    updateUsers()
   })
 })
 
