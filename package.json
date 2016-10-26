@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "babel-node --presets \"es2015,react,stage-2\" server.js"
+    "server": "babel-node --presets \"es2015,react,stage-2\" server.js",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
