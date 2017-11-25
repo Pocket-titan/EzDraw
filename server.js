@@ -304,6 +304,7 @@ io.on('connection', socket => {
   })
 
   // On disconnect
+  // SOMETHING IS GOING WRONG HERE AND I DON'T KNOW WHAT
   socket.on('disconnect', data => {
     // If we never even entered a username
     if (!socket.user) {
@@ -315,6 +316,7 @@ io.on('connection', socket => {
         users.splice(ourIndex, 1)
     }
     if (socket.roomName) {
+      console.log(socket.roomName, "has disconnected")
       leaveRoom()
     }
     updateUsers()
