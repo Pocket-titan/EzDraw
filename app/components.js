@@ -2,12 +2,11 @@ import React from 'react'
 import { findDOMNode } from 'react-dom'
 import io from 'socket.io-client'
 
-let URL = window.location.hostname + ':3040'
-// let URL = 'http://localhost:3040'
-export let Socket = io.connect(URL, {secure: true})
+let URL = 'https://ezdraw.herokuapp.com'
+export let Socket = io(URL)
 
 export let Dimensions = {
-  height: 670,
+  height: 625,
 }
 
 export let View = ({ style, ...props }) =>

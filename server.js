@@ -2,8 +2,10 @@ import { map } from 'lodash'
 import fs from 'fs'
 import socketIO from 'socket.io'
 
+console.log('trying to run server...')
+
 // Local server to test: run "npm run server"
-let io = socketIO(3040)
+let io = socketIO(process.env.PORT || 3040)
 
 let rooms = []
 // Users is only used to check for existing usernames
