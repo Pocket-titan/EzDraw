@@ -1,0 +1,40 @@
+:local(.star) {
+  height: 50px;
+  width: 50px;
+  background-image:url( './assets/star_animation.png');
+  background-position: right;
+  background-repeat:no-repeat;
+  background-size:2900%;
+  animation: star-burst .8s steps(28) 1;
+}
+
+@keyframes star-burst {
+  from {background-position:left;}
+  to { background-position:right;}
+}
+
+:local(.panel) {
+  flex: 0;
+  flex-direction: column;
+  border-radius: 6px;
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Scrollbar */
+/* For the "inset" look only */
+::-webkit-scrollbar-thumb:vertical {
+  background-color: #3e3e3e;
+  height: 15px;
+}
+
+::-webkit-scrollbar {
+  height: 5px;
+  width: 6px;
+  background-color: transparent;
+}
+
+body {
+  background-color: #483E3D;
+}

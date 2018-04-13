@@ -1,0 +1,25 @@
+{
+  "name": "ezdraw",
+  "homepage": "http://jelmar.eu/ezdraw",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^15.0.2",
+    "react-dom": "^15.0.2",
+    "bootstrap": "^3.3.6",
+    "react-scripts": "1.1.4",
+    "font-awesome": "^4.6.1",
+    "material-ui": "^0.15.0",
+    "react-color": "^2.1.0",
+    "reactcss": "^0.4.5",
+    "socket.io": "^1.4.6",
+    "socket.io-client": "^1.4.6",
+    "velocity-react": "^1.1.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
